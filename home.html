@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Items finder</title>
+        <style>
+        body{background-color:white;color:black;font-size:13px;font-family:arial;}
+#sidebar{background-color:#303030;position:fixed;width:22%;margin:0;top:0;left:0;bottom:0;padding:20px 20px 20px 30px;color:white;overflow:auto;box-sizing:border-box;}
+.main{margin-left:25%;width:70%;overflow:auto;box-sizing:border-box;}
+.tab-head{position:sticky;top:0;background-color:white;}
+table{width:100%;}
+table,td{border:1px solid gray;border-collapse:collapse;}
+th,td{padding:15px;}
+td:hover{color:red;}
+th{background-color:white;color:black;}
+#popup{border:2px solid blue;bottom:40%;width:40%;position:fixed;padding:10px;margin-left:50%;display:none;}
+#iconscontainer{display:flex;align-items:center;justify-content:center;}
+.icon{width:40px;height:40px;}
+#heading{font-weight:bold;text-align:left;}
+.line{margin-right:5px;}
+#file-download{display:none;padding:10px 0;}
+#additems{position:fixed;display:flex;width:70%;align-items:center;justify-content:center;text-align:center;z-index:1;}
+.addremove{margin:30px;height:30px;width:30px;background-color:orange;border:none;}
+.addremove:hover{background-color:#303030;color:white;}
+#lastsolditem{margin-bottom:60px;}
+.menu{margin-top:15px;color:white;max-width:60%;}
+.active::before{background-image:url(https://1.bp.blogspot.com/-oQPCIGdj_Zk/YO_NfpxsB2I/AAAAAAAAC2E/C7Ulsq5O54wQsGmnjOsU-_rM-NfJr3JDwCLcBGAsYHQ/s240/iconmonstr-arrow-37-240.png);background-size:contain;content:"";width:8px;height:8px;display:inline-block;float:right;position:relative;transform:translateY(4px);}
+.menubreak{margin:30px 10px 30px auto;border:0.5px solid #c0c0c0;}select{margin-right:30px;}
+#similar{position:fixed;border:2px solid gray;top:8%;border-radius:10px;padding:20px;background-color:white;color:#303030;z-index:2;}
+#closesimilar{width:20px;height:20px;border:none;background-color:#303030;color:white;float:right;border-radius:50%;margin:5px 5px;}
+#case .main:not(:first-child){display:none;}
+#searchsimilar{width:30%;height:30px;border-radius:5px;border:1px solid gray;padding-left:5px;}
+#addsimilarlist{background-color:pink;padding:3px;margin:0 5px;}
+#similar-name{width:25%;height:30px;border-radius:5px;border:1px solid gray;padding-left:5px;}
+#add-similar{width:40px;height:30px;border-radius:5px;background-color:#303030;color:white;border:none;margin-left:8px;}
+.similar-list{position:relative;background-color:#f0e68c;line-height:1.8;padding:20px;border-radius:5px;margin:25px auto;box-sizing:border-box;font-size:14px;}
+.similar-list:first-of-type{display:none;}
+#similar-models{margin-right:50px;}
+#similar-models>span:not(:first-child)::before{content:"-";margin:0 20px;}
+#confirm-list{position:absolute;top:50%;transform:translateY(-50%);right:20px;color:white;background-color:#303030;border:none;border-radius:5px;padding:10px;}
+#list-div{max-height:300px;}
+#new-order-head{display:inline-block;}
+#add-order{display:inline-block;border:none;background-color:green;color:white;margin:0 7px 0 20px;width:20px;height:20px;}
+#del-order{display:inline-block;width:20px;height:20px;box-sizing:border-box;border:1px solid gray;}
+#new-order-item{width:25%;height:30px;border-radius:5px;border:1px solid gray;padding-left:5px;}
+#add-order-to-array{width:40px;height:30px;border-radius:5px;background-color:#303030;color:white;border:none;margin-left:8px;}
+#new-order-dashbord{display:none}
+#new-order-list{font-size:14px;padding:5px;height:300px;}
+#del-order-list{display:none;position:fixed;bottom:50px;}
+#display-bord{padding:20px 0;height:300px;}
+#next-items{position:fixed;color:white;border:none;padding:10px 25px;border-radius:5px;background-color:#303030;bottom:20%;}    
+        </style>
+    </head>
+    <body>
+        <div id="sidebar">
+        <div id="lastsolditem">Last Sold Item</div>
+        <div class="menu active">Items</div>
+        <div class="menu">New Order</div>
+        <div class="menu">Out Of Stock</div>
+        <div class="menu">Check Stock</div>
+        <div class="menu">Similar Items</div>
+        <hr class="menubreak">
+        <div class="menu">Backup/Restore</div>
+        <div id ="addremove-menu" class="menu"><span>Add/Remove Items</span></div>
+        </div>
+        <section id="case">
+        <div class="main static">
+        <table id= "mytable1">
+    <tr>
+    <th>Item</th>
+    <th>Size</th>
+    <th>Shelf</th>
+    <th>Hanger</th>
+    <th>Stock</th>
+    </tr>
+    <tr>
+    <td>Model 1</td>
+    <td>0</td>
+    <td class="shelf">1</td>
+    <td class="hanger">5</td>
+    <td class="stock">0</td>
+    </tr>
+     <tr>
+    <td>Model 2</td>
+    <td>0</td>
+    <td class="shelf">1</td>
+    <td class="hanger">8</td>
+    <td class="stock">0</td>
+    </tr>
+    </table>   
+         <div id="popup">
+         <span id="heading">Title</span>
+         <br>
+         <br>
+         <span class="line">Size 0</span>
+         <span class="line">Shelf 0</span>
+         <span class="line">Hanger 0</span>
+         <span class="line">Stocks 0</span>
+         <br/>
+         <br/>
+         <div id="iconscontainer">
+         <img class="icon" src="">
+         <img class="icon" src="https://blogger.googleusercontent.com/img/a/AVvXsEhzQb9lxDziCqUFDqWfMfbfofpqvYDQ51Xz8aybmtfd2HW8WNaRmS7VK4Q63WqMDdvZtGHSqtWz8NflkDXUQ-p5nLhHhRME-CvpAYHt1dJOpBpx0pkKvUtLzHAP-ysQWhhRtKg6V_m51uzIKh5HAk8gxTFfNlZxXBiceSsniIVV79rpQp-FvLDmg9DU=s240"/>
+         <img class="icon" src="https://blogger.googleusercontent.com/img/a/AVvXsEjmQfqNVj6FwJ4Yox8ChrcTb36m_eZAHBE-otbcCmismlmS2PW5btcOJ8NQztNHdkZqhnU_H6xkL5U8CtKk9amrFzjIefOku5nnixQyjWmCB_H5gwVlI1yh2d97Vks5tXM10-duHgP_28OWBkfanRjbdQTr1w4TZPM-tkkY5xi-HHV9vtLYpkwtE29v=s240"/>
+         <img class="icon" src="https://blogger.googleusercontent.com/img/a/AVvXsEjmQfqNVj6FwJ4Yox8ChrcTb36m_eZAHBE-otbcCmismlmS2PW5btcOJ8NQztNHdkZqhnU_H6xkL5U8CtKk9amrFzjIefOku5nnixQyjWmCB_H5gwVlI1yh2d97Vks5tXM10-duHgP_28OWBkfanRjbdQTr1w4TZPM-tkkY5xi-HHV9vtLYpkwtE29v=s240"/>
+         </div>
+         <div id="inputdiv">
+         <textarea id="input">
+         </textarea>
+         <span id="gobutton">Go</span>
+         </div>
+         </div>
+         </div>
+         <div id="neworder" class="main static">
+         <div class="tab-head">
+         <h3 id="new-order-head">New Order</h3>
+         <button id="add-order">+</button>
+         <button id="del-order">-</button>
+         <div id="new-order-dashbord">
+         <input type="text" id="new-order-item" placeholder="Item Name"/>
+         <button id="add-order-to-array">Add</button>
+         </div>
+         </div>
+         <div id="new-order-list"></div>
+         <button id="del-order-list">Delete</button>
+         </div>
+         <div id="outofstock" class="main static">
+         <h3>Out Of Stock Items</h3>
+         <p id="empty-notice-order">No Items</p>
+         </div>
+         <div id="checkstock" class="main static">
+         <div class="tab-head">
+         <h3>Check Stock</h3>
+         <label for="shelf">Shelf&nbsp;</label>
+         <select name="shelf" id="shelf">
+         <option value="1">1&nbsp;&nbsp;</option>
+         </select>
+         <label for="hanger">Hanger&nbsp;</label>
+         <select name="hanger" id="hanger">
+         <option value="0">0&nbsp;&nbsp;</option>
+         </select>
+         </div>
+         <div id="display-bord">
+         </div>
+         <button id="next-items">Next</button>
+         </div>
+         <div id="similar" class="main pop">
+         <button id="closesimilar">×</button>
+         <input type="text" id="searchsimilar" placeholder="Find Similar Items"/>
+         <span id="addsimilarlist">+</span>
+         <div id="createsimilarlist">
+         <p>Create new list !</p>
+         <input type="text" id="similar-name" placeholder="Item Name"/>
+         <button id="add-similar">Add</button>
+         <div id="list-div">
+         <div class="similar-list">
+         <div id="similar-models"></div>
+         <button id="confirm-list">Create</button>
+         </div>
+         </div>
+         </div>
+         </div>
+         <div id="backuporrestore" class="main">
+         <h4>Backup</h4>
+         <p>Backup data as a text file</p>
+         <div id="file-download">
+         <a download="phonecasedata.txt" href="#" id="file-link">Download</a>
+         </div>
+         <button id="backup-data">Backup</button>
+         <br/>
+         <br/>
+         <h4>Restore</h4>
+         <p>Choose the file in which data contains</p>
+         <input type="file" id="file-importer"/>
+         </br>
+         </br>
+         <button id="restore-data">Restore</button>
+         </div>
+         <div id="additems" class="main pop2">
+         <button id="deleteitem" class="addremove">-</button>
+         <button id="additem" class="addremove">+</button>
+         <button id="confirm" class="addremove">✓</button>
+         </div>
+         </section>
+    </body>
+</html>
