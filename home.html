@@ -181,5 +181,245 @@ th{background-color:white;color:black;}
          <button id="confirm" class="addremove">✓</button>
          </div>
          </section>
+<script>
+    var alltabs  = [];
+//setActive
+function setActive(y=this){
+var current = document.getElementsByClassName("active")[0];
+alltabs.push(current);
+if (alltabs.length > 3){alltabs.shift()}
+current.classList.remove("active");
+y.classList.add("active");
+}
+//opentab
+function openTab(x){
+var menuelms,tabs,a;
+menuelms  = document.getElementsByClassName("menu");
+tabs = document.getElementsByClassName("main");
+function makeNone(){a =0;for (;a<tabs.length;a++){tabs[a].style.display = "none"}};
+menuelms[x].addEventListener("click",function(){if(tabs[x].id!=="similar"){makeNone()};
+if (tabs[x].id==="additems"){tabs[0].style.display="block"};
+tabs[x].style.display="block"})
+}
+//New order
+function addnewOrder(){
+    var items,orderInput,dashBord,delButton,p;
+    const currentItems = [];
+    const deletedItems = [];
+    orderInput = document.getElementById("new-order-item");
+    dashBord = document.getElementById("new-order-dashbord");
+    delButton = document.getElementById("del-order-list");
+    function openDash(){
+        if(dashBord.style.display==="block"){dashBord.style.display="none"}
+    else{dashBord.style.display="block"};
+    delButton.style.display="none";
+    items = document.querySelectorAll(".order-item");
+    items.forEach(function(e){e.removeEventListener("click",giveFunc);e.style.color="black"});
+    if(currentItems.length>0){currentItems.splice(0,currentItems.length)}
+    }
+    function addOrder(){
+        if(orderInput.value.length !== 0){
+    p = document.createElement("P");
+    p.className = "order-item";
+    p.innerText = orderInput.value;
+    document.getElementById("new-order-list").appendChild(p);
+    orderInput.value = ""
+        }
+    }
+    function giveFunc(){
+    if(currentItems.includes(this)===false){currentItems.push(this);this.style.color="red"}
+    else{currentItems.splice(currentItems.indexOf(this),1);this.style.color = "black";}}
+    function addtoArr(){
+    items = document.querySelectorAll(".order-item");
+    items.forEach(e=>e.addEventListener("click",giveFunc));
+    dashBord.style.display="none";
+    delButton.style.display="block"}
+    function delItems(){
+        currentItems.forEach(function(itm){itm.remove();deletedItems.push(itm)});
+        deletedItems.forEach(d => currentItems.splice(currentItems.indexOf(d),1))
+    }
+    document.getElementById("add-order").addEventListener("click",openDash);
+    document.getElementById("add-order-to-array").addEventListener("click",addOrder);
+    document.getElementById("del-order").addEventListener("click",addtoArr);
+    delButton.addEventListener("click",delItems);
+}
+//out of stock
+function outofStock(){
+    var rows,stockCells,outofStocks,c,list,emptyNotice;
+    rows = document.querySelectorAll("#mytable1 tr:not(:first-child)");
+    stockCells = document.querySelectorAll("td:nth-last-child(1)");
+    outofStocks = [];
+    c = 0;
+    for (;c<stockCells.length;c++){if(stockCells[c].innerText !== "0"){continue}outofStocks.push(rows[c])}
+    list = document.createElement("OL");
+    emptyNotice = document.querySelectorAll("#outofstock > p")[0];
+    list.style.fontSize = "15px";
+    if(outofStocks.length > 0){emptyNotice.style.display = "none";
+    outofStocks.forEach(function(f){let li = document.createElement("LI");
+ li.style.padding = "5px";
+ li.innerText = f.firstElementChild.innerText;
+ list.appendChild(li)})
+    document.getElementById("outofstock").appendChild(list)}
+    else{emptyNotice.style.display ="block"}
+}
+//Check stock
+function checkStock(){
+    var shelf,hanger,shelfCells,hangerCells,displayBord,hangerNums,models,shelfNums,topShelf,topHanger;
+    shelf = document.getElementById("shelf");
+    hanger = document.getElementById("hanger");
+    shelfCells =  document.querySelectorAll("#mytable1 .shelf");
+    hangerCells = document.querySelectorAll("#mytable1 .hanger");
+    displayBord = document.getElementById("display-bord");
+    shelfNums = [];
+    hangerNums = [];
+    models = document.querySelectorAll("tr:first-child");
+    shelfCells.forEach(function(s){if(shelfNums.includes(s)===false){shelfNums.push(Number(s.innerText))}});
+    hangerCells.forEach(function(h){if(hangerNums.includes(h)===false){hangerNums.push(Number(h.innerText))}});
+    topShelf =  Math.max.apply(null,shelfNums);
+    topHanger = Math.max.apply(null,hangerNums);
+    if(topShelf>1){for (var k=2;k<=topShelf;k++){var op = document.createElement("OPTION");
+    op.text = k;shelf.add(op)}};
+    for (var j=1;j<=topHanger;j++){var op2 = document.createElement("OPTION");
+    op2.text = j;hanger.add(op2)};
+    function itemFilter(a){
+        if(a.querySelector(".shelf").innerText === shelf.value && a.querySelector(".hanger").innerText === hanger.value){return a}
+    }
+    function showStock(){
+        var rowsArr = Array.from(document.querySelectorAll("#mytable1 tr:not(:first-child)"));
+        var checkStocks = rowsArr.filter(itemFilter);
+        if (checkStocks.length > 0){displayBord.innerHTML = "";}
+        else{displayBord.innerHTML = "<p>No Items / Hanger not found !</p>";};
+        checkStocks.forEach(function(p){displayBord.innerHTML += "<h4>" + p.firstElementChild.innerText + "&nbsp;&nbsp;&#8209;&nbsp;&nbsp;" + p.querySelector(".stock").innerText + "</h4>" + "</br>"})
+    }
+    function nextStock(){
+        var shelfIndex = shelf.selectedIndex;
+        var hangerIndex = hanger.selectedIndex;
+        if(hangerIndex === hanger.options.length-1){
+        if(shelfIndex !== shelf.options.length-1){
+        shelf.options[shelfIndex+1].selected = "selected";hanger.selectedIndex = "0";}}
+        else{hanger.options[hangerIndex+1].selected = "selected";}
+    }
+    shelf.addEventListener("change",function(){showStock();hanger.selectedIndex = "0";});
+    hanger.addEventListener("change",showStock);
+    document.getElementById("next-items").addEventListener("click",function(){nextStock(),showStock()});
+}
+//Similar
+function addSimilar(){
+    var itemInput = document.getElementById("similar-name");
+    var addButton = document.getElementById("add-similar");
+    var listArr = document.getElementById("similar-models");
+    var listParent = document.getElementsByClassName("similar-list")[0];
+    var createButton = document.getElementById("confirm-list");
+    var allArr;
+    function createList(){
+        listParent.style.display = "block";
+        var itemSpan = document.createElement("SPAN");
+        itemSpan.innerText = itemInput.value;
+        listArr.appendChild(itemSpan);
+    }
+    function addList(){
+        var spanElms = listArr.querySelectorAll("span");
+        var itemsArr = [];
+        var newDiv = document.createElement("DIV");
+        newDiv.className = "similar-list";
+        spanElms.forEach(elm => itemsArr.push(elm.innerText));
+        newDiv.innerText = itemsArr.join(" - ");
+        listParent.insertAdjacentElement("afterend",newDiv);
+        listParent.style.display = "none";
+        spanElms.forEach(el=>el.remove());
+    }
+    function simFilter(s){
+        var searchInput = document.getElementById("searchsimilar").value.toLowerCase().replace(/ /g, "");
+      if(s.indexOf(searchInput)>-1){return s}  
+    }
+    function loadArr(){
+        allArr = [];
+        var allDivs = document.querySelectorAll(".similar-list:not(:first-of-type)");
+        for (v=0;v<allDivs.length;v++){var cuArr = allDivs[v].innerText.replace(/ /g, "").split(" - ").join("");allArr.push(cuArr);};
+    }
+    loadArr();
+    function searchSim(){
+        loadArr();
+        var allDivs = document.querySelectorAll(".similar-list:not(:first-of-type)");
+        for (var d=0;d<allDivs.length;d++){allDivs[d].style.display = "none"};
+        var fArr = allArr.filter(simFilter);
+        fArr.forEach(function(r){allDivs[allArr.indexOf(r)].style.display = "block";})
+    }
+    addButton.addEventListener("click",createList);
+    createButton.addEventListener("click",addList);
+    document.getElementById("addsimilarlist").addEventListener("click",searchSim)
+}
+//backup and restore
+function exportdata(){
+var link,table1,tds1,tabledata1;
+link = document.getElementById("file-link");
+table1 =document.getElementById("mytable1");
+tds1 = table1.querySelectorAll("td");
+tabledata1 = [];
+for (i=0;i<tds1.length;i++){tabledata1.push(tds1[i].innerText);}
+var tableDatas1 = JSON.stringify(tabledata1);
+var blob = new Blob([tableDatas1],{type : 'text/plain'});
+link.style.display="block";
+link.href = URL.createObjectURL(blob);
+document.getElementById("file-download").style.display = "block";
+}
+function importdata(){var imdata;
+document.getElementById("file-importer").addEventListener("change",function(){
+    var freader = new FileReader();
+    freader.onload = function(){
+    imdata = freader.result;
+    document.getElementById("restore-data").onclick=function(){var imdatas = JSON.parse(imdata);
+    var cells = document.getElementById("mytable1").querySelectorAll("td");
+    for(j=0;j<cells.length;j++){cells[j].innerText=imdatas[j];}}
+}
+    freader.readAsText(this.files[0]);
+    })}
+//checkactive
+function checkActive(){
+    if(document.getElementById("addremove-menu").classList.contains("active")){
+        return true
+    }
+}
+//addorremove
+function addItem(){
+    var allRows,currentRow,clonedRow,row1,clonedCells;
+    allRows = document.getElementsByTagName("tr");
+    currentRow = allRows[allRows.length-1];
+    row1 = document.getElementsByTagName("tr")[1];
+    function setColor(){
+    document.querySelectorAll("tr").forEach(el => el.style.backgroundColor = "white");
+    currentRow.style.backgroundColor = "#ffffe0"}
+function setClone(){
+clonedRow = row1.cloneNode(true);
+clonedRow.addEventListener("click",function(){if(checkActive()===true){currentRow = this;setColor()}});
+var clonedCells = clonedRow.querySelectorAll("td");
+clonedCells[0].innerText="Model";
+clonedCells[1].innerText="0";
+clonedCells[2].innerText="0";
+clonedCells[3].innerText="0";}
+setClone();
+for (var d=0;d<allRows.length;d++){allRows[d].addEventListener("click",function(){if(checkActive()===true){currentRow = this;setColor()}})}
+document.getElementById("additem").onclick = function(){currentRow.insertAdjacentElement("afterend",clonedRow);setClone();setColor()}
+document.getElementById("deleteitem").onclick = function(){if(allRows.length > 2){currentRow.remove();currentRow = allRows[allRows.length-1];setColor()}}
+}
+//load
+window.onload = function(){
+    var tabsLength,menuelms,menuelmslength,b,i;
+    tabsLength = document.getElementsByClassName("main").length;
+    menuelms = document.getElementsByClassName("menu");
+    menuelmslength = menuelms.length;
+    b = 0;
+    i = 0;
+for(;b<tabsLength;b++){openTab(b)}
+for (;i<menuelmslength;i++){menuelms[i].addEventListener("click",function(){setActive(this)})}
+document.getElementById("closesimilar").onclick = function(){this.parentElement.style.display = "none";setActive(alltabs[alltabs.length-1])};
+addItem();
+document.getElementById("backup-data").addEventListener("click",exportdata);
+importdata();
+outofStock();
+addnewOrder();
+checkStock();
+addSimilar()}
+</script>
     </body>
 </html>
